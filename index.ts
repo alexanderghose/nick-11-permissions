@@ -5,11 +5,11 @@ import Movies from './models/movies'
 
 const app = express()
 
-const movieData = [
-  { name: 'Diehard', movieId: 1 },
-  { name: 'The Grinch', movieId: 2 },
-  { name: 'Home Alone', movieId: 3 }
-]
+// const movieData = [
+//   { name: 'Diehard', movieId: 1 },
+//   { name: 'The Grinch', movieId: 2 },
+//   { name: 'Home Alone', movieId: 3 }
+// ]
 
 const router = express.Router()
 
