@@ -25,6 +25,7 @@ const updateMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.updateMovie = updateMovie;
 const deleteMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("delete request from user", req.currentUser);
     // ! 1) Get the movieId 
     const movieId = req.params.movieId;
     // ! 2) Delete the movie 

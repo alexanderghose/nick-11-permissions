@@ -12,6 +12,8 @@ export const updateMovie = async (req : Request, res: Response) => {
 }
 
 export const deleteMovie = async (req : Request, res: Response) => {
+   console.log("delete request from user", req.currentUser)
+
     // ! 1) Get the movieId 
     const movieId = req.params.movieId
     // ! 2) Delete the movie 

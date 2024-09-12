@@ -16,15 +16,16 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const express_1 = __importDefault(require("express"));
 const movieController_1 = require("./controllers/movieController");
 const userController_1 = require("./controllers/userController");
+const secureRoute_1 = __importDefault(require("./middleware/secureRoute"));
 const app = (0, express_1.default)();
 const router = express_1.default.Router();
 router.route('/api/signup').post(userController_1.signup);
 router.route('/api/login').post(userController_1.login);
 router.route('/api/movies').get(movieController_1.getMovies);
 router.route('/api/movies/:movieId').get(movieController_1.getMovieById);
-router.route('/api/movies').post(movieController_1.createMovie);
-router.route('/api/movies/:movieId').delete(movieController_1.deleteMovie);
-router.route('/api/movies/:movieId').put(movieController_1.updateMovie);
+router.route('/api/movies').post(secureRoute_1.default, movieController_1.createMovie); // secure
+router.route('/api/movies/:movieId').delete(secureRoute_1.default, movieController_1.deleteMovie); // secure: only milo can delete milo's movies
+router.route('/api/movies/:movieId').put(secureRoute_1.default, movieController_1.updateMovie); // secure
 app.use(express_1.default.json());
 app.use(router);
 function start() {

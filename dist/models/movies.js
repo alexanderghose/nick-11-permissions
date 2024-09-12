@@ -9,5 +9,6 @@ const movieSchema = new mongoose_1.default.Schema({
     name: { type: String, required: true },
     year: { type: Number, required: true },
     image: { type: String, required: true }
+    // user
 });
 exports.default = mongoose_1.default.model('Movie', movieSchema);
