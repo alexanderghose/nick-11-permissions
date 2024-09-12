@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = exports.signup = void 0;
 const users_1 = __importDefault(require("../models/users"));
 const users_2 = require("../models/users");
+// ! import the jwt creation and verification utilities 
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log('POSTING!', req.body);
@@ -39,7 +41,12 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // check if the password is correct.
     const isValidPw = (0, users_2.validatePassword)(incomingPassword, foundUser.password);
     if (isValidPw) {
-        res.send({ message: "Login successful" });
+        // ! Issues a unique jwt for this user
+        const token = jsonwebtoken_1.default.sign({ userId: foundUser._id, email: foundUser.email }, // base64-compressed payload: anything you want
+        "This is a very secret string only we know", // a secret only known to srv
+        { expiresIn: '24h' } // an expiry of the token
+        );
+        res.send({ message: "Login successful", token });
     }
     else {
         res.status(401).send({ message: "Login failed. Check credentials and try again!" });

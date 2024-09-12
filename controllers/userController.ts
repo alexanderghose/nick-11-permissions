@@ -1,6 +1,8 @@
 import Users from '../models/users'
 import { Request, Response } from 'express'
 import { validatePassword } from '../models/users'
+// ! import the jwt creation and verification utilities 
+import jwt from 'jsonwebtoken'
 
 export const signup = async (req : Request, res: Response) => {
     try {
@@ -26,7 +28,15 @@ export const login = async(req: Request,res: Response) => {
     // check if the password is correct.
     const isValidPw:boolean = validatePassword(incomingPassword, foundUser.password)
     if (isValidPw) {
-        res.send({ message: "Login successful"})
+
+        // ! Issues a unique jwt for this user
+        const token = jwt.sign(
+            { userId: foundUser._id, email: foundUser.email }, // base64-compressed payload: anything you want
+            "This is a very secret string only we know", // a secret only known to srv
+            { expiresIn: '24h' }                        // an expiry of the token
+        )
+
+        res.send({ message: "Login successful", token })
     } else {
         res.status(401).send({ message: "Login failed. Check credentials and try again!" })
     }
