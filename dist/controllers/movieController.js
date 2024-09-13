@@ -25,18 +25,33 @@ const updateMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.updateMovie = updateMovie;
 const deleteMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // ! req.currentUser tells us who is making the current request (eg., milo)
     console.log("delete request from user", req.currentUser);
-    // ! 1) Get the movieId 
     const movieId = req.params.movieId;
-    // ! 2) Delete the movie 
-    const deletedMovie = yield movies_1.default.findByIdAndDelete(movieId);
-    // const deletedMovie = await Movies.findOneAndDelete({ _id: movieId }) // ? Alternative method.
-    // ! 3) Send back deleted movie
-    res.send(deletedMovie);
+    // ! We're obtaining the movie document in order to check who is the owner
+    const movieDoc = yield movies_1.default.findById(movieId);
+    if (!movieDoc)
+        return res.json({ message: "The Movie you're trying to delete is not found" });
+    const movieOwnerID = movieDoc.user;
+    console.log("the movie you're trying to delete is owned by", movieOwnerID);
+    if (req.currentUser._id.equals(movieOwnerID)) { // if requester (eg., milo) === owner (eg., milo)
+        // ! 2) Delete the movie 
+        const deletedMovie = yield movies_1.default.findByIdAndDelete(movieId);
+        // const deletedMovie = await Movies.findOneAndDelete({ _id: movieId }) // ? Alternative method.
+        // ! 3) Send back deleted movie
+        res.send(deletedMovie);
+    }
+    else {
+        res.json({ message: "Sorry, it is not very nice to delete other people's movies." });
+    }
 });
 exports.deleteMovie = deleteMovie;
 const createMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('POSTING!', req.body);
+    console.log("this CREATE REQUEST is coming from this person: ", req.currentUser);
+    // ! in order to create a movie, the schema requires a "user" field
+    // ! and thus we must pull that out of the req.currentUser variable (which
+    // !    is populated by the jwt validation code)
+    req.body.user = req.currentUser._id;
     const movie = yield movies_1.default.create(req.body);
     res.send(movie);
 });

@@ -8,7 +8,9 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const movieSchema = new mongoose_1.default.Schema({
     name: { type: String, required: true },
     year: { type: Number, required: true },
-    image: { type: String, required: true }
-    // user
+    image: { type: String, required: true },
+    // ! Adding something called a "referencing relationship"
+    // ! Essentially, this user must be a reference to a real user
+    user: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User', required: true }
 });
 exports.default = mongoose_1.default.model('Movie', movieSchema);

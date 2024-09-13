@@ -12,19 +12,35 @@ export const updateMovie = async (req : Request, res: Response) => {
 }
 
 export const deleteMovie = async (req : Request, res: Response) => {
-   console.log("delete request from user", req.currentUser)
+  // ! req.currentUser tells us who is making the current request (eg., milo)
+  console.log("delete request from user", req.currentUser)
+  const movieId = req.params.movieId
 
-    // ! 1) Get the movieId 
-    const movieId = req.params.movieId
+  // ! We're obtaining the movie document in order to check who is the owner
+  const movieDoc = await Movies.findById(movieId);
+  if (!movieDoc) return res.json({message: "The Movie you're trying to delete is not found"})
+   
+  const movieOwnerID = movieDoc.user
+  console.log("the movie you're trying to delete is owned by", movieOwnerID)
+
+  if (req.currentUser._id.equals(movieOwnerID)) { // if requester (eg., milo) === owner (eg., milo)
     // ! 2) Delete the movie 
     const deletedMovie = await Movies.findByIdAndDelete(movieId)
     // const deletedMovie = await Movies.findOneAndDelete({ _id: movieId }) // ? Alternative method.
     // ! 3) Send back deleted movie
     res.send(deletedMovie)
+  } else {
+    res.json({ message: "Sorry, it is not very nice to delete other people's movies."})
+  }
 }
 
 export const createMovie = async (req : Request, res: Response) => {
-    console.log('POSTING!', req.body)
+    console.log("this CREATE REQUEST is coming from this person: ", req.currentUser)
+
+    // ! in order to create a movie, the schema requires a "user" field
+    // ! and thus we must pull that out of the req.currentUser variable (which
+    // !    is populated by the jwt validation code)
+    req.body.user = req.currentUser._id;
     const movie = await Movies.create(req.body)
     res.send(movie)
 }
